@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css?family=Inconsolata&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    text-align: center;
+}
+
+iframe[name="player"] {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0px;
+    z-index: 5;
+}
+
+div#tv-id {
+    color: #ffffff;
+    font-size: 2.5vh;
+    line-height: 2.1vh;
+    font-family: "Inconsolata", monospace;
+    font-weight: bold;
+    text-shadow: 1px 0 0 #070707,
+                 -1px 0 0 #070707,
+                 0 1px 0 #070707,
+                 0 -1px 0 #070707,
+                 .5px .5px #070707,
+                 -.5px -.5px 0 #070707,
+                 .5px -.5px 0 #070707,
+                 -.5px .5px 0 #070707;;
+    position: absolute;
+    z-index: 10;
+    top: 10px;
+    left: 10px;
+}
