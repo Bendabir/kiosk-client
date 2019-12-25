@@ -20,10 +20,19 @@ iframe[name="player"] {
     z-index: 5;
 }
 
+@keyframes fade {
+    0%,100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
 div#tv-id {
     color: #ffffff;
-    font-size: 2.5vh;
-    line-height: 2.1vh;
+    font-size: 5vh;
+    line-height: 4.4vh;
     font-family: "Inconsolata", monospace;
     font-weight: bold;
     text-shadow: 1px 0 0 #070707,
@@ -36,6 +45,18 @@ div#tv-id {
                  -.5px .5px 0 #070707;;
     position: absolute;
     z-index: 10;
-    top: 10px;
+    bottom: 10px;
     left: 10px;
+}
+
+.fade-in {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s linear 0s, opacity 500ms;
+}
+
+.fade-out {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 500ms, opacity 500ms;
 }
