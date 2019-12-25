@@ -7,9 +7,11 @@
         <title>TV test - Waiting for connection</title>
     </head>
     <body>
-        <div id="tv-id">TV test</div>
-        <iframe title="content" src="contents/text.html" frameborder="0" name="player" scrolling="no">
+        <div id="tv-id" class="fade-out">TV test</div>
+        <iframe title="content" src="contents/error.html" frameborder="0" name="player" scrolling="no" id="player">
             <p>Your browser does not support iframes.</p>
         </iframe>
+        <script src="assets/js/socket.io.js"></script>
+        <script src="assets/js/kiosk.js"></script>
     </body>
 </html>
