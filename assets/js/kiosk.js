@@ -16,7 +16,8 @@ const KioskEvents = {
     EXCEPTION: "exception",
     DISPLAY: "display",
     IDENTIFY: "identify",
-    REGISTER: "register"
+    REGISTER: "register",
+    RELOAD: "reload"
 };
 
 const helpers = {
@@ -54,7 +55,7 @@ socket.on(BuiltInEvents.CONNECT, () => {
     socket.emit(KioskEvents.REGISTER, {
         id: id,
         screenSize: `${window.innerWidth}x${window.innerHeight}`,
-        machine: window.navigator.userAgent,
+        machine: window.navigator.platform,
         version: config.VERSION
     });
 });
@@ -86,4 +87,8 @@ socket.on(BuiltInEvents.CONNECT_ERROR, () => {
 
 socket.on(KioskEvents.IDENTIFY, (payload) => {
     helpers.showID(payload.duration);
+});
+
+socket.on(KioskEvents.RELOAD, () => {
+    window.location.reload();
 });
