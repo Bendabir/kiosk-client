@@ -16,8 +16,10 @@ const KioskEvents = {
     INIT: "kiosk_init",
     EXCEPTION: "kiosk_exception",
     DISPLAY: "kiosk_display",
-    IDENTIFY: "kiosk_identify",
-    REGISTER: "kiosk_register"
+    ACTION: "kiosk_identify",
+    REGISTER: "kiosk_register",
+    RELOAD: "kiosk_reload",
+    BRIGHTNESS: "kiosk_brightness"
 };
 
 const helpers = {
@@ -146,4 +148,8 @@ socket.on(BuiltInEvents.CONNECT_ERROR, () => {
 
 socket.on(KioskEvents.IDENTIFY, (payload) => {
     helpers.showID(payload.duration);
+});
+
+socket.on(KioskEvents.RELOAD, () => {
+    iframe.src = iframe.src;
 });
