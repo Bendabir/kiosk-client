@@ -32,15 +32,15 @@ const helpers = {
     },
     showID(duration = 5000) {
         const el = document.querySelector("#tv-id");
-        el.className = "fade-in";
+        el.classList.replace("fade-out", "fade-in");
 
         setTimeout(() => {
-            el.className = "fade-out";
+            el.classList.replace("fade-in", "fade-out");
         }, duration);
     },
     showIcon(action, duration = 1000) {
         const el = document.querySelector("#action-icon");
-        el.className = "fade-in";
+        el.classList.replace("fade-out", "fade-in");
 
         const icon = el.querySelector(".material-icons");
 
@@ -74,7 +74,7 @@ const helpers = {
         }
 
         setTimeout(() => {
-            el.className = "fade-out";
+            el.classList.replace("fade-in", "fade-out");
         }, duration);
     }
 };
