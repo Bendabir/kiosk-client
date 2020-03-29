@@ -13,17 +13,21 @@ const BuiltInEvents = {
 };
 
 const KioskEvents = {
-    EXCEPTION: "exception",
-    DISPLAY: "display",
-    IDENTIFY: "identify",
-    REGISTER: "register"
+    INIT: "kiosk_init",
+    EXCEPTION: "kiosk_exception",
+    DISPLAY: "kiosk_display",
+    IDENTIFY: "kiosk_identify",
+    REGISTER: "kiosk_register"
 };
 
 const helpers = {
     setID(id) {
         document.querySelector("#tv-id").innerText = id;
     },
-    setTitle(id, status) {
+    setTitle(title) {
+        document.querySelector("#content-title").innerText = title;
+    },
+    setWindowTitle(id, status) {
         if (status) {
             document.title = `TV ${id} - ${status}`;
         } else {
@@ -76,6 +80,11 @@ const helpers = {
         setTimeout(() => {
             el.classList.replace("fade-in", "fade-out");
         }, duration);
+    },
+    setBrightness(brightness) {
+        const cappedBrightness = Math.max(Math.min(brightness, 1.0), 0.05);
+
+        document.querySelector("#brightness").style.opacity = 1.0 - cappedBrightness;
     }
 };
 
@@ -87,7 +96,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id") || "default";
 
 helpers.setID(id);
-helpers.setTitle(id, "Waiting for connection...");
+helpers.setWindowTitle(id, "Waiting for connection...");
 
 socket.on(BuiltInEvents.CONNECT, () => {
     socket.emit(KioskEvents.REGISTER, {
@@ -105,12 +114,22 @@ socket.on(KioskEvents.EXCEPTION, (err) => {
         iframe.src += `?details=${encodeURIComponent(err.message)}`;
     }
 
-    helpers.setTitle(id, err.reason);
+    helpers.setWindowTitle(id, err.reason);
+});
+
+socket.on(KioskEvents.INIT, (payload) => {
+    iframe.src = payload.content.uri;
+
+    helpers.setWindowTitle(id);
+    helpers.setTitle(payload.content.displayName);
+    helpers.setBrightness(payload.tv.brightness);
 });
 
 socket.on(KioskEvents.DISPLAY, (payload) => {
-    iframe.src = payload.uri;
-    helpers.setTitle(id);
+    iframe.src = payload.content.uri;
+
+    helpers.setWindowTitle(id);
+    helpers.setTitle(payload.content.displayName);
 });
 
 socket.on(BuiltInEvents.CONNECT_ERROR, () => {
@@ -119,8 +138,10 @@ socket.on(BuiltInEvents.CONNECT_ERROR, () => {
     // This event occurs multiple times
     if (!iframe.src.endsWith(ERROR_CONTENT)) {
         iframe.src = ERROR_CONTENT;
-        helpers.setTitle(id, "Waiting for connection...");
+        helpers.setWindowTitle(id, "Waiting for connection...");
     }
+
+    helpers.setBrightness(1);
 });
 
 socket.on(KioskEvents.IDENTIFY, (payload) => {
