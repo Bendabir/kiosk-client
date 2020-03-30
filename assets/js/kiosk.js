@@ -16,7 +16,7 @@ const KioskEvents = {
     INIT: "kiosk_init",
     EXCEPTION: "kiosk_exception",
     DISPLAY: "kiosk_display",
-    ACTION: "kiosk_identify",
+    IDENTIFY: "kiosk_identify",
     REGISTER: "kiosk_register",
     RELOAD: "kiosk_reload",
     BRIGHTNESS: "kiosk_brightness"
