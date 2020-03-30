@@ -1,4 +1,5 @@
 // TODO : Rewrite this with TypeScript ?
+// TODO : Perhaps this should be bundled as a WPA
 const BuiltInEvents = {
     CONNECT: "connect",
     CONNECTING: "connecting",
@@ -19,7 +20,17 @@ const KioskEvents = {
     IDENTIFY: "kiosk_identify",
     REGISTER: "kiosk_register",
     RELOAD: "kiosk_reload",
-    BRIGHTNESS: "kiosk_brightness"
+    BRIGHTNESS: "kiosk_brightness",
+    TOGGLE_MUTE: "kiosk_toggle_mute"
+};
+
+const ContentType = {
+    IMAGE: "image",
+    TEXT: "text",
+    VIDEO: "video",
+    WEBPAGE: "webpage",
+    YOUTUBE: "youtube",
+    PLAYLIST: "playlist"
 };
 
 const helpers = {
@@ -87,6 +98,24 @@ const helpers = {
         const cappedBrightness = Math.max(Math.min(brightness, 1.0), 0.05);
 
         document.querySelector("#brightness").style.opacity = 1.0 - cappedBrightness;
+    },
+    toggleMute(muted, contentType) {
+        // The way we mute/unmute a screen depends on the inner content
+        switch(contentType) {
+            case ContentType.VIDEO: {
+                iframe.contentWindow.postMessage({
+                    object: "toggle_mute",
+                    data: {
+                        muted: muted
+                    }
+                }, "*");
+                break;
+            }
+            case ContentType.YOUTUBE: {
+                break;
+            }
+            default: break; // Do nothing for other contents
+        }
     }
 };
 
@@ -156,4 +185,8 @@ socket.on(KioskEvents.RELOAD, () => {
 
 socket.on(KioskEvents.BRIGHTNESS, (payload) => {
     helpers.setBrightness(payload.brightness);
+});
+
+socket.on(KioskEvents.TOGGLE_MUTE, (payload) => {
+    helpers.toggleMute(payload.muted, payload.type);
 });
