@@ -153,3 +153,7 @@ socket.on(KioskEvents.IDENTIFY, (payload) => {
 socket.on(KioskEvents.RELOAD, () => {
     iframe.src = iframe.src;
 });
+
+socket.on(KioskEvents.BRIGHTNESS, (payload) => {
+    helpers.setBrightness(payload.brightness);
+});
