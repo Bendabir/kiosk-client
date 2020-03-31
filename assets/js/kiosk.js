@@ -88,6 +88,18 @@ const helpers = {
                 // icon.textContent = "fast_rewind";
                 break;
             }
+            case "high_brightness": {
+                icon.textContent = "brightness_high";
+                break;
+            }
+            case "medium_brightness": {
+                icon.textContent = "brightness_medium";
+                break;
+            }
+            case "low_brightness": {
+                icon.textContent = "brightness_low";
+                break;
+            }
         }
 
         setTimeout(() => {
@@ -184,9 +196,18 @@ socket.on(KioskEvents.RELOAD, () => {
 });
 
 socket.on(KioskEvents.BRIGHTNESS, (payload) => {
+    if (payload.brightness > 0.66) {
+        helpers.showIcon("high_brightness");
+    } else if (payload.brightness < 0.33) {
+        helpers.showIcon("low_brightness");
+    } else {
+        helpers.showIcon("medium_brightness");
+    }
+
     helpers.setBrightness(payload.brightness);
 });
 
 socket.on(KioskEvents.TOGGLE_MUTE, (payload) => {
+    helpers.showIcon(payload.muted ? "mute" : "unmute");
     helpers.toggleMute(payload.muted, payload.type);
 });
