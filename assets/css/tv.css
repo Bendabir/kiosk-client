@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Inconsolata&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Inconsolata|Montserrat&display=swap");
 
 * {
     margin: 0;
@@ -97,4 +97,74 @@ div#brightness {
     height: 100%;
     z-index: 9;
     opacity: 0.0;
+}
+
+div#settings {
+    background-color: #eee;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 20;
+}
+
+div#settings * {
+    font-family: "Montserrat", sans-serif;
+    color: #333;
+}
+
+div#settings .wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+div#settings h1 {
+    font-size: 10vh;
+    margin-bottom: 10vh;
+}
+
+div#settings .field * {
+    display: block;
+}
+
+div#settings .field input {
+    padding: 2vh;
+    font-size: 3vh;
+    border: none;
+    background: rgba(255, 255, 255, 0.35);
+    width: 50vh;
+    border-radius: 0.25vh;
+}
+
+div#settings .field input::placeholder {
+    color: #3338;
+}
+
+div#settings .field + .field {
+    margin-top: 2.5vh;
+}
+
+div#settings .field label {
+    font-size: 2vh;
+    margin-bottom: 1vh;
+    text-align: left;
+    color: #3338;
+}
+
+div#settings button#ok-button {
+    padding: 2vh;
+    font-size: 3vh;
+    font-weight: bold;
+    margin-top: 10vh;
+    border-radius: 0.25vh;
+    width: 25vh;
+    background: #3338;
+    border: none;
+    color: #eee;
+}
+
+div#settings button#ok-button:hover {
+    cursor: pointer;
+    box-shadow: 0.2vh 0.2vh #333;
 }

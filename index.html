@@ -8,6 +8,26 @@
         <title>TV test - Waiting for connection</title>
     </head>
     <body>
+        <div id="settings">
+            <div class="wrapper">
+                <h1>Settings</h1>
+
+                <div class="field">
+                    <label for="tv-id">Default Screen ID</label>
+                    <input type="text" id="tv-id" placeholder="default"/>
+                </div>
+                <div class="field">
+                    <label for="server-host">Server Host</label>
+                    <input type="text" id="server-host" placeholder="localhost"/>
+                </div>
+                <div class="field">
+                    <label for="server-port">Server Port</label>
+                    <input type="number" id="server-port" placeholder="5000" min="0" max="65535" step="1"/>
+                </div>
+
+                <button id="ok-button">OK</button>
+            </div>
+        </div>
         <div id="tv-id" class="fade-out white-bordered"></div>
         <div id="content-title" class="white-bordered"></div>
         <div id="action-icon" class="fade-out white-bordered">
@@ -17,8 +37,8 @@
         <iframe title="content" src="contents/error.html" frameborder="0" name="player" scrolling="no" id="player" allow="autoplay">
             <p>Your browser does not support iframes.</p>
         </iframe>
-        <script src="config.js"></script>
         <script src="assets/js/socket.io.js"></script>
+        <script src="assets/js/config.js"></script>
         <script src="assets/js/enums.js"></script>
         <script src="assets/js/helpers.js"></script>
         <script src="assets/js/kiosk.js"></script>
