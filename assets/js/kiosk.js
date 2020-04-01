@@ -4,20 +4,20 @@ if (!config.hasBeenConfigured) {
     // Show the settings panel
     config.showPanel();
 } else {
-    config.load(); // Load the config from localStorage
+    // Load the config from the local storage
+    config.load();
     config.hidePanel();
 
-    const socket = io(config.serverURL);
-    const iframe = document.querySelector("iframe#player");
-    let type = null; // Save the content type
-    let volume = null;
+    // Set up some basics on the screen
+    player.setID(config.screenID, true);
+    player.setWindowTitle("Waiting for connection...");
 
-    helpers.setID(config.screenID);
-    helpers.setWindowTitle(config.screenID, "Waiting for connection...");
+    // Connecting to the WebSocket server and define behavior
+    const socket = io(config.serverURL);
 
     socket.on(BuiltInEvents.CONNECT, () => {
         socket.emit(KioskEvents.REGISTER, {
-            id: config.screenID,
+            id: player.id,
             screenSize: `${window.innerWidth}x${window.innerHeight}`,
             machine: window.navigator.userAgent,
             version: config.VERSION
@@ -25,92 +25,79 @@ if (!config.hasBeenConfigured) {
     });
 
     socket.on(KioskEvents.EXCEPTION, (err) => {
-        iframe.src = `${config.serverURL}/contents/error/${err.code}`;
+        let url = `${config.serverURL}/contents/error/${err.code}`;
 
         if (err.message) {
-            iframe.src += `?details=${encodeURIComponent(err.message)}`;
+            url += `?details=${encodeURIComponent(err.message)}`;
         }
 
-        helpers.setWindowTitle(config.screenID, err.reason);
-
-        type = null;
-        volume = null;
+        player.reset();
+        player.display(url);
+        player.setWindowTitle(err.reason);
     });
 
     socket.on(KioskEvents.INIT, (payload) => {
-        iframe.src = payload.content.uri;
-        type = payload.content.type;
-        volume = payload.tv.volume;
+        player.setContentType(payload.content.type);
 
         // If we have a YouTube content, we need to bind our helper on it
-        if (type === ContentType.YOUTUBE) {
-            youtube.bind(iframe);
+        if (player.type === ContentType.YOUTUBE) {
+            youtube.bind(player.iframe);
         }
 
-        helpers.setWindowTitle(config.screenID);
-        // helpers.setTitle(payload.content.displayName);
-        helpers.setBrightness(payload.tv.brightness);
-        helpers.toggleMute(iframe, payload.tv.muted, type);
-        helpers.setVolume(iframe, payload.tv.volume, type);
+        player.setWindowTitle(payload.content.displayName);
+        player.setDisplayName(payload.content.displayName);
+        player.setBrightness(payload.tv.brightness);
+        player.toggleMute(payload.tv.muted);
+        player.setVolume(payload.tv.volume);
+        player.display(payload.content.uri);
+        player.identify();
     });
 
     socket.on(KioskEvents.DISPLAY, (payload) => {
-        iframe.src = payload.content.uri;
-        type = payload.content.type;
-
         // Release the helper and bind alter on if needed
         youtube.release();
 
-        if (type === ContentType.YOUTUBE) {
-            youtube.bind(iframe);
+        player.setContentType(payload.content.type);
+
+        if (player.type === ContentType.YOUTUBE) {
+            youtube.bind(player.iframe);
         }
 
-        helpers.setWindowTitle(config.screenID);
-        // helpers.setTitle(payload.content.displayName);
+        player.setWindowTitle(payload.content.displayName);
+        player.setDisplayName(payload.content.displayName);
+        player.display(payload.content.uri);
     });
 
     socket.on(BuiltInEvents.CONNECT_ERROR, () => {
-        const ERROR_CONTENT = "contents/error.html";
+        player.reset();
+
+        const errorContent = "contents/error.html";
 
         // This event occurs multiple times
-        if (!iframe.src.endsWith(ERROR_CONTENT)) {
-            iframe.src = ERROR_CONTENT;
-            helpers.setWindowTitle(config.screenID, "Waiting for connection...");
+        if (!player.url.endsWith(errorContent)) {
+            player.setWindowTitle("Waiting for connection...");
+            player.display(errorContent);
         }
-
-        helpers.setBrightness(1);
-        type = null;
     });
 
     socket.on(KioskEvents.IDENTIFY, (payload) => {
-        helpers.showID(payload.duration);
+        player.identify(payload.duration);
     });
 
-    socket.on(KioskEvents.RELOAD, () => {
-        iframe.src = iframe.src;
-    });
+    socket.on(KioskEvents.RELOAD, player.reload.bind(player));
 
     socket.on(KioskEvents.BRIGHTNESS, (payload) => {
-        if (payload.brightness > 0.66) {
-            helpers.showIcon("high_brightness");
-        } else if (payload.brightness < 0.33) {
-            helpers.showIcon("low_brightness");
-        } else {
-            helpers.showIcon("medium_brightness");
-        }
-
-        helpers.setBrightness(payload.brightness);
+        // Show the icons
+        player.setBrightness(payload.brightness, true);
     });
 
     socket.on(KioskEvents.TOGGLE_MUTE, (payload) => {
-        helpers.showIcon(payload.muted ? "mute" : "unmute");
-        helpers.toggleMute(iframe, payload.muted, type);
+        // Show the icons
+        player.toggleMute(payload.muted, true);
     });
 
     socket.on(KioskEvents.VOLUME, (payload) => {
-        helpers.showIcon((payload.volume < volume) ? "volume_down" : "volume_up");
-        helpers.setVolume(iframe, payload.volume, type);
-
-        volume = payload.volume; // Save the volume for later
+        // Show the icons
+        player.setVolume(payload.volume, true);
     });
 }
