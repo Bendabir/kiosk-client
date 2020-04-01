@@ -35,6 +35,11 @@ if (!config.hasBeenConfigured) {
     socket.on(KioskEvents.INIT, (payload) => {
         iframe.src = payload.content.uri;
 
+        // If we have a YouTube content, we need to bind our helper on it
+        if (payload.content.type === ContentType.YOUTUBE) {
+            youtube.bind(iframe);
+        }
+
         helpers.setWindowTitle(config.screenID);
         helpers.setTitle(payload.content.displayName);
         helpers.setBrightness(payload.tv.brightness);
@@ -42,6 +47,13 @@ if (!config.hasBeenConfigured) {
 
     socket.on(KioskEvents.DISPLAY, (payload) => {
         iframe.src = payload.content.uri;
+
+        // Release the helper and bind alter on if needed
+        youtube.release();
+
+        if (payload.content.type === ContentType.YOUTUBE) {
+            youtube.bind(iframe);
+        }
 
         helpers.setWindowTitle(config.screenID);
         helpers.setTitle(payload.content.displayName);
