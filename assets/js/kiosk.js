@@ -10,6 +10,7 @@ if (!config.hasBeenConfigured) {
     const socket = io(config.serverURL);
     const iframe = document.querySelector("iframe#player");
     let type = null; // Save the content type
+    let volume = null;
 
     helpers.setID(config.screenID);
     helpers.setWindowTitle(config.screenID, "Waiting for connection...");
@@ -33,11 +34,13 @@ if (!config.hasBeenConfigured) {
         helpers.setWindowTitle(config.screenID, err.reason);
 
         type = null;
+        volume = null;
     });
 
     socket.on(KioskEvents.INIT, (payload) => {
         iframe.src = payload.content.uri;
         type = payload.content.type;
+        volume = payload.tv.volume;
 
         // If we have a YouTube content, we need to bind our helper on it
         if (type === ContentType.YOUTUBE) {
@@ -45,8 +48,10 @@ if (!config.hasBeenConfigured) {
         }
 
         helpers.setWindowTitle(config.screenID);
-        helpers.setTitle(payload.content.displayName);
+        // helpers.setTitle(payload.content.displayName);
         helpers.setBrightness(payload.tv.brightness);
+        helpers.toggleMute(iframe, payload.tv.muted, type);
+        helpers.setVolume(iframe, payload.tv.volume, type);
     });
 
     socket.on(KioskEvents.DISPLAY, (payload) => {
@@ -56,12 +61,12 @@ if (!config.hasBeenConfigured) {
         // Release the helper and bind alter on if needed
         youtube.release();
 
-        if (payload.content.type === ContentType.YOUTUBE) {
+        if (type === ContentType.YOUTUBE) {
             youtube.bind(iframe);
         }
 
         helpers.setWindowTitle(config.screenID);
-        helpers.setTitle(payload.content.displayName);
+        // helpers.setTitle(payload.content.displayName);
     });
 
     socket.on(BuiltInEvents.CONNECT_ERROR, () => {
@@ -99,6 +104,13 @@ if (!config.hasBeenConfigured) {
 
     socket.on(KioskEvents.TOGGLE_MUTE, (payload) => {
         helpers.showIcon(payload.muted ? "mute" : "unmute");
-        helpers.toggleMute(payload.muted, type);
+        helpers.toggleMute(iframe, payload.muted, type);
+    });
+
+    socket.on(KioskEvents.VOLUME, (payload) => {
+        helpers.showIcon((payload.volume < volume) ? "volume_down" : "volume_up");
+        helpers.setVolume(iframe, payload.volume, type);
+
+        volume = payload.volume; // Save the volume for later
     });
 }

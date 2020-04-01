@@ -142,6 +142,14 @@ const helpers = {
                 icon.textContent = "volume_up";
                 break;
             }
+            case "volume_up": {
+                icon.textContent = "volume_up";
+                break;
+            }
+            case "volume_down": {
+                icon.textContent = "volume_down";
+                break;
+            }
             case "forward": {
                 icon.textContent = "forward_5";
                 // icon.textContent = "fast_forward";
@@ -175,7 +183,7 @@ const helpers = {
 
         document.querySelector("#brightness").style.opacity = 1.0 - cappedBrightness;
     },
-    toggleMute(muted, contentType) {
+    toggleMute(iframe, muted, contentType) {
         // The way we mute/unmute a screen depends on the inner content
         switch(contentType) {
             case ContentType.VIDEO: {
@@ -193,6 +201,24 @@ const helpers = {
                 break;
             }
             default: break; // Do nothing for other contents
+        }
+    },
+    setVolume(iframe, volume, contentType) {
+        switch(contentType) {
+            case ContentType.VIDEO: {
+                iframe.contentWindow.postMessage({
+                    object: "set_volume",
+                    data: {
+                        volume: volume
+                    }
+                }, "*");
+                break;
+            }
+            case ContentType.YOUTUBE: {
+                youtube.execute("setVolume", Math.round(volume * 100));
+                break;
+            }
+            default: break;
         }
     }
 };
