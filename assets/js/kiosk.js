@@ -9,6 +9,7 @@ if (!config.hasBeenConfigured) {
 
     const socket = io(config.serverURL);
     const iframe = document.querySelector("iframe#player");
+    let type = null; // Save the content type
 
     helpers.setID(config.screenID);
     helpers.setWindowTitle(config.screenID, "Waiting for connection...");
@@ -30,13 +31,16 @@ if (!config.hasBeenConfigured) {
         }
 
         helpers.setWindowTitle(config.screenID, err.reason);
+
+        type = null;
     });
 
     socket.on(KioskEvents.INIT, (payload) => {
         iframe.src = payload.content.uri;
+        type = payload.content.type;
 
         // If we have a YouTube content, we need to bind our helper on it
-        if (payload.content.type === ContentType.YOUTUBE) {
+        if (type === ContentType.YOUTUBE) {
             youtube.bind(iframe);
         }
 
@@ -47,6 +51,7 @@ if (!config.hasBeenConfigured) {
 
     socket.on(KioskEvents.DISPLAY, (payload) => {
         iframe.src = payload.content.uri;
+        type = payload.content.type;
 
         // Release the helper and bind alter on if needed
         youtube.release();
@@ -69,6 +74,7 @@ if (!config.hasBeenConfigured) {
         }
 
         helpers.setBrightness(1);
+        type = null;
     });
 
     socket.on(KioskEvents.IDENTIFY, (payload) => {
@@ -93,6 +99,6 @@ if (!config.hasBeenConfigured) {
 
     socket.on(KioskEvents.TOGGLE_MUTE, (payload) => {
         helpers.showIcon(payload.muted ? "mute" : "unmute");
-        helpers.toggleMute(payload.muted, payload.type);
+        helpers.toggleMute(payload.muted, type);
     });
 }
