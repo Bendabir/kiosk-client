@@ -91,7 +91,7 @@ if (!config.hasBeenConfigured) {
         player.setBrightness(payload.brightness, true);
     });
 
-    socket.on(KioskEvents.TOGGLE_MUTE, (payload) => {
+    socket.on(KioskEvents.MUTE, (payload) => {
         // Show the icons
         player.toggleMute(payload.muted, true);
     });
@@ -99,5 +99,20 @@ if (!config.hasBeenConfigured) {
     socket.on(KioskEvents.VOLUME, (payload) => {
         // Show the icons
         player.setVolume(payload.volume, true);
+    });
+
+    socket.on(KioskEvents.PLAY, (payload) => {
+        // Show the icons
+        player.togglePlay(payload.play, true);
+    });
+
+    socket.on(KioskEvents.FORWARD, (payload) => {
+        // Show the icons
+        player.forward(payload.duration, true);
+    });
+
+    socket.on(KioskEvents.REWIND, (payload) => {
+        // Show the icons
+        player.rewind(payload.duration, true);
     });
 }

@@ -118,7 +118,8 @@ const player = {
                 youtube.execute(this.muted ? "mute" : "unMute");
                 break;
             }
-            default: break;
+            // Prevent showing icon if content is not supported
+            default: return;
         }
 
         if (iconize) {
@@ -143,11 +144,84 @@ const player = {
                 youtube.execute("setVolume", Math.round(volume * 100));
                 break;
             }
-            default: break;
+            // Prevent showing icon if content is not supported
+            default: return;
         }
 
         if (iconize) {
             this.showIcon(this.volume < previousVolume ? "volume_down" : "volume_up");
+        }
+    },
+    togglePlay(play, iconize = false) {
+        switch(this.type) {
+            case ContentType.VIDEO: {
+                this.iframe.contentWindow.postMessage({
+                    object: play ? "play" : "pause"
+                }, "*");
+                break;
+            }
+            case ContentType.YOUTUBE: {
+                youtube.execute(play ? "playVideo" : "pauseVideo");
+                break;
+            }
+            // Prevent showing icon if content is not supported
+            default: return;
+        }
+
+        if (iconize) {
+            this.showIcon(play ? "play_arrow" : "pause");
+        }
+    },
+    forward(duration, iconize = false) {
+        duration = Math.round(Math.max(0, duration));
+
+        switch(this.type) {
+            case ContentType.VIDEO: {
+                this.iframe.contentWindow.postMessage({
+                    object: "forward",
+                    data: {
+                        duration: duration / 1000
+                    }
+                }, "*");
+                break;
+            }
+            case ContentType.YOUTUBE: {
+                // TODO
+                console.warn("Forward for YouTube videos is not supported yet.");
+                return;
+            }
+            // Prevent showing icon if content is not supported
+            default: return;
+        }
+
+        if (iconize) {
+            this.showIcon("fast_forward");
+        }
+    },
+    rewind(duration, iconize = false) {
+        duration = Math.round(Math.max(0, duration));
+
+        switch(this.type) {
+            case ContentType.VIDEO: {
+                this.iframe.contentWindow.postMessage({
+                    object: "rewind",
+                    data: {
+                        duration: duration / 1000
+                    }
+                }, "*");
+                break;
+            }
+            case ContentType.YOUTUBE: {
+                // TODO
+                console.warn("Rewind for YouTube videos is not supported yet.");
+                return;
+            }
+            // Prevent showing icon if content is not supported
+            default: return;
+        }
+
+        if (iconize) {
+            this.showIcon("fast_rewind");
         }
     }
 };
