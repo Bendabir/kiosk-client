@@ -34,6 +34,7 @@ if (!config.hasBeenConfigured) {
         player.reset();
         player.display(url);
         player.setWindowTitle(err.reason);
+        player.toggleDisplayName(false);
     });
 
     socket.on(KioskEvents.INIT, (payload) => {
@@ -51,6 +52,7 @@ if (!config.hasBeenConfigured) {
         player.setVolume(payload.tv.volume);
         player.display(payload.content.uri);
         player.identify();
+        player.toggleDisplayName(payload.tv.showTitle);
     });
 
     socket.on(KioskEvents.DISPLAY, (payload) => {
@@ -69,19 +71,23 @@ if (!config.hasBeenConfigured) {
     });
 
     socket.on(BuiltInEvents.CONNECT_ERROR, () => {
-        player.reset();
-
         const errorContent = "contents/error.html";
 
         // This event occurs multiple times
         if (!player.url.endsWith(errorContent)) {
+            player.reset();
             player.setWindowTitle("Waiting for connection...");
+            player.toggleDisplayName(false);
             player.display(errorContent);
         }
     });
 
     socket.on(KioskEvents.IDENTIFY, (payload) => {
         player.identify(payload.duration);
+    });
+
+    socket.on(KioskEvents.SHOW_TITLE, (payload) => {
+        player.toggleDisplayName(payload.show);
     });
 
     socket.on(KioskEvents.RELOAD, player.reload.bind(player));

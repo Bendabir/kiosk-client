@@ -23,7 +23,8 @@ const KioskEvents = {
     VOLUME: "kiosk_volume",
     PLAY: "kiosk_play",
     FORWARD: "kiosk_forward",
-    REWIND: "kiosk_rewind"
+    REWIND: "kiosk_rewind",
+    SHOW_TITLE: "kiosk_show_title"
 };
 
 const ContentType = {

@@ -5,6 +5,7 @@ const player = {
     muted: true,
     volume: 1.0,
     brightness: 1.0,
+    showDisplayName: false,
     iframe: document.querySelector("iframe#player"),
     icons: new Map([
 
@@ -75,6 +76,17 @@ const player = {
         setTimeout(() => {
             el.classList.replace("fade-in", "fade-out");
         }, duration);
+    },
+    toggleDisplayName(show) {
+        this.showDisplayName = show;
+
+        const el = document.querySelector("#content-title");
+
+        if (this.showDisplayName) {
+            el.classList.replace("fade-out", "fade-in");
+        } else {
+            el.classList.replace("fade-in", "fade-out");
+        }
     },
     display(url) {
         this.iframe.src = url;
