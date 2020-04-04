@@ -13,7 +13,11 @@ if (!config.hasBeenConfigured) {
     player.setWindowTitle("Waiting for connection...");
 
     // Connecting to the WebSocket server and define behavior
-    const socket = io(config.serverURL);
+    const socket = io(config.serverURL, {
+        query: {
+            key: config.CLIENT_KEY
+        }
+    });
 
     socket.on(BuiltInEvents.CONNECT, () => {
         socket.emit(KioskEvents.REGISTER, {
@@ -81,6 +85,20 @@ if (!config.hasBeenConfigured) {
             player.display(errorContent);
         }
     };
+
+    socket.on(BuiltInEvents.ERROR, (err) => {
+        // Handle authentication error
+        // Could but cleaner I guess
+        if (err === "E006") {
+            const message = "Please reconfigure your client.";
+            let url = `${config.serverURL}/contents/error/E006?details=${encodeURIComponent(message)}`;
+
+            player.reset();
+            player.display(url);
+            player.setWindowTitle("Authentication failed");
+            player.toggleDisplayName(false);
+        }
+    });
 
     socket.on(BuiltInEvents.CONNECT_ERROR, reset);
     socket.on(BuiltInEvents.DISCONNECT, () => {
