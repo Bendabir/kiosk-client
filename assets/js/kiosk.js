@@ -70,7 +70,7 @@ if (!config.hasBeenConfigured) {
         player.display(payload.content.uri);
     });
 
-    socket.on(BuiltInEvents.CONNECT_ERROR, () => {
+    const reset = () => {
         const errorContent = "contents/error.html";
 
         // This event occurs multiple times
@@ -80,6 +80,14 @@ if (!config.hasBeenConfigured) {
             player.toggleDisplayName(false);
             player.display(errorContent);
         }
+    };
+
+    socket.on(BuiltInEvents.CONNECT_ERROR, reset);
+    socket.on(BuiltInEvents.DISCONNECT, () => {
+        reset();
+
+        // Try to reconnect to the server after a while
+        setTimeout(() => socket.open(), 10000);
     });
 
     socket.on(KioskEvents.IDENTIFY, (payload) => {
