@@ -13,21 +13,6 @@ const player = {
     get url() {
         return this.iframe.src;
     },
-    /** Set the object value and setup the data in the DOM.
-     */
-    setup(id, displayName, type, muted, volume, brightness) {
-        // Set the object values and
-        this.type = type;
-
-        // These helpers process some DOM modifications as well
-        this.setID(id);
-        this.setDisplayName(displayName);
-        this.setBrightness(brightness);
-        this.toggleMute(muted);
-        this.setVolume(volume);
-
-        this.setWindowTitle(displayName);
-    },
     reset() {
         this.display(null);
         this.setDisplayName(null);
@@ -117,12 +102,16 @@ const player = {
 
         switch(this.type) {
             case ContentType.VIDEO: {
-                this.iframe.contentWindow.postMessage({
-                    object: "toggle_mute",
-                    data: {
-                        muted: this.muted
-                    }
-                }, "*");
+                // Give player time to initialize
+                setTimeout(() => {
+                    this.iframe.contentWindow.postMessage({
+                        object: "toggle_mute",
+                        data: {
+                            muted: this.muted
+                        }
+                    }, "*");
+                }, 1000);
+
                 break;
             }
             case ContentType.YOUTUBE: {
@@ -144,12 +133,15 @@ const player = {
 
         switch(this.type) {
             case ContentType.VIDEO: {
-                this.iframe.contentWindow.postMessage({
-                    object: "set_volume",
-                    data: {
-                        volume: volume
-                    }
-                }, "*");
+                setTimeout(() => {
+                    this.iframe.contentWindow.postMessage({
+                        object: "set_volume",
+                        data: {
+                            volume: volume
+                        }
+                    }, "*");
+                }, 1000);
+
                 break;
             }
             case ContentType.YOUTUBE: {
