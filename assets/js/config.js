@@ -6,17 +6,21 @@ const config = {
     VERSION: "3.0.0",
     actualScreenID: null,
     load() {
-        this.SCREEN_ID = window.localStorage.getItem("screen_id");
-        this.SERVER_HOST = window.localStorage.getItem("server_host");
-        this.SERVER_PORT = parseInt(window.localStorage.getItem("server_port"));
-        this.CLIENT_KEY = window.localStorage.getItem("client_key");
+        const urlParams = new URLSearchParams(window.location.search);
+
+        this.SCREEN_ID = window.localStorage.getItem("screen_id") || urlParams.get("id");
+        this.SERVER_HOST = window.localStorage.getItem("server_host") || urlParams.get("serverHost");
+        this.SERVER_PORT = parseInt(window.localStorage.getItem("server_port")) || urlParams.get("serverPort");
+        this.CLIENT_KEY = window.localStorage.getItem("client_key") || urlParams.get("clientKey");
     },
     get hasBeenConfigured() {
-        const screenID = window.localStorage.getItem("screen_id");
-        const host = window.localStorage.getItem("server_host");
-        const port = window.localStorage.getItem("server_port");
+        const urlParams = new URLSearchParams(window.location.search);
 
-        return screenID !== null && host !== null && port !== null;
+        const screenID = window.localStorage.getItem("screen_id") || urlParams.get("id");
+        const host = window.localStorage.getItem("server_host") ||  urlParams.get("serverHost");
+        const port = window.localStorage.getItem("server_port") || urlParams.get("serverPort");
+
+        return screenID && host && port;
     },
     configure(screenID, serverHost, serverPort, clientKey) {
         this.SCREEN_ID = screenID || "default";
