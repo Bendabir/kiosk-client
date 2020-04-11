@@ -23,7 +23,7 @@ if (!config.hasBeenConfigured) {
         socket.emit(KioskEvents.REGISTER, {
             id: player.id,
             screenSize: `${window.innerWidth}x${window.innerHeight}`,
-            machine: window.navigator.userAgent,
+            machine: window.navigator.platform,
             version: config.VERSION
         });
     });
