@@ -127,6 +127,12 @@ const player = {
             this.showIcon(this.muted ? "volume_mute" : "volume_up");
         }
     },
+    mute(iconize = false) {
+        this.toggleMute(true, iconize);
+    },
+    unmute(iconize = false) {
+        this.toggleMute(false, iconize);
+    },
     setVolume(volume, iconize = false) {
         const previousVolume = this.volume;
         this.volume = Math.max(Math.min(volume, 1.0), 0.0);
@@ -175,6 +181,12 @@ const player = {
         if (iconize) {
             this.showIcon(play ? "play_arrow" : "pause");
         }
+    },
+    play(iconize = false) {
+        this.togglePlay(true, iconize);
+    },
+    pause(iconize = false) {
+        this.togglePlay(false, iconize);
     },
     forward(duration, iconize = false) {
         duration = Math.round(Math.max(0, duration));
